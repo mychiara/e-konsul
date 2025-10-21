@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistem Konsultasi</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+      :root { --primary-blue: #0d6efd; --secondary-blue: #e7f1ff; --light-bg: #f7f9fc; --dark-text: #212529; --gray-text: #6c757d; --border-color: #dee2e6; --success-color: #198754; --danger-color: #dc3545; --warning-color: #ffc107; --white-color: #fff; --shadow: 0 10px 30px rgba(0, 0, 0, 0.07); }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+      body { background-color: var(--light-bg); font-family: 'Inter', sans-serif; color: var(--dark-text); display: flex; flex-direction: column; min-height: 100vh; }
+      #mainContainer { width: 100%; transition: max-width 0.3s ease-in-out; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+      .container-login { max-width: 480px; }
+      .content-card { display: none; padding: 2.5rem; background-color: var(--white-color); border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow); animation: fadeIn 0.5s ease-out forwards; }
+      .role-badge { font-weight: 500; font-size: 0.75rem; padding: 0.3em 0.6em; vertical-align: middle; margin-left: 8px; background-color: var(--secondary-blue); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
+      .form-label { font-weight: 500; color: var(--gray-text); }
+      .form-control, .form-select { border-radius: 0.5rem; padding: 0.75rem 1rem; border: 1px solid var(--border-color); }
+      .form-control:focus, .form-select:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15); }
+      h2, h3 { color: var(--dark-text); font-weight: 600; display: flex; align-items: center; gap: 0.75rem;}
+      h2 .bi, h3 .bi { font-size: 1.1em; color: var(--primary-blue);}
+      .btn { border-radius: 0.5rem; padding: 0.6rem 1.25rem; font-weight: 600; transition: all 0.2s ease; }
+      .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+      .btn-primary { background-color: var(--primary-blue); border-color: var(--primary-blue); }
+      .btn .bi { margin-right: 0.5rem; vertical-align: -2px;}
+      .table { vertical-align: middle; }
+      .table thead th { background-color: var(--light-bg); color: var(--dark-text); font-weight: 600; border-bottom: 2px solid var(--primary-blue); }
+      .konsultasi-card { border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary-blue); }
+      .stat-card { background-color: var(--white-color); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); text-align: center; }
+      .stat-card .stat-icon { font-size: 2.2rem; margin-bottom: 0.75rem; color: var(--primary-blue); display: block; }
+      .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--dark-text); }
+      .stat-card .stat-label { font-size: 0.9rem; color: var(--gray-text); font-weight: 500; }
+      .stat-card.clickable { cursor: pointer; }
+      .stat-card.clickable:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--primary-blue); }
+      .admin-sub-card { border: 1px solid var(--border-color); border-radius: 0.75rem; box-shadow: var(--shadow-sm); }
+      .login-logo { max-width: 120px; margin-bottom: 1rem; }
+      .app-footer { width: 100%; padding: 1.5rem 0; background-color: var(--white-color); border-top: 1px solid var(--border-color); color: var(--gray-text); font-size: 0.9rem; flex-shrink: 0; }
+    </style>
+  </head>
+  <body>
+
+    <main id="mainContainer" class="container-login">
+      <!-- HALAMAN LOGIN -->
+      <!-- ====================================================== -->
+      <!-- BAGIAN YANG DIPERBAIKI ADA DI BARIS DI BAWAH INI -->
+      <!-- ====================================================== -->
+      <div id="loginView" class="content-card text-center" style="display: block;">
+        <img src="https://cdn-icons-png.flaticon.com/512/8201/8201170.png" alt="Logo Konsultasi" class="login-logo">
+        <h2 class="mt-2 justify-content-center">Sistem Konsultasi Mahasiswa</h2>
+        <p class="text-muted mb-4">Silakan masuk untuk melanjutkan ke dashboard.</p>
+        <div class="mb-3 text-start">
+          <label for="emailInput" class="form-label">Email</label>
+          <input type="email" id="emailInput" class="form-control" placeholder="Masukkan email Anda" autocomplete="email">
+        </div>
+        <div class="mb-3 text-start">
+          <label for="passwordInput" class="form-label">Password</label>
+          <input type="password" id="passwordInput" class="form-control" placeholder="Masukkan password Anda" autocomplete="current-password">
+        </div>
+        <button id="btnMasuk" class="btn btn-primary w-100 mt-3" disabled><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
+        <div id="loginSpinner" class="text-center mt-3" style="display:none;">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD MAHASISWA -->
+      <div id="mahasiswaView" class="content-card">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-person-fill"></i> Dashboard Mahasiswa</h2>
+            <div class="d-flex align-items-center">
+                <span id="userInfoMahasiswa"></span>
+                <button class="btn btn-outline-danger btn-sm ms-3 logout-button"><i class="bi bi-box-arrow-right m-0"></i></button>
+            </div>
+        </div>
+        <hr>
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <h3 class="mt-4"><i class="bi bi-pencil-square"></i> Ajukan Konsultasi Baru</h3>
+                 <form id="formKonsultasi">
+                    <div class="row g-3">
+                        <div class="col-12"><input type="text" id="namaMahasiswa" class="form-control" readonly></div>
+                        <div class="col-12"><select id="topikMahasiswa" class="form-select" required></select></div>
+                        <div class="col-12"><textarea id="pertanyaanText" class="form-control" rows="5" placeholder="Tuliskan pertanyaan atau detail konsultasi Anda di sini..." required></textarea></div>
+                        <div class="col-12"><button type="submit" class="btn btn-primary w-100"><i class="bi bi-send-check"></i> Kirim Konsultasi</button></div>
+                    </div>
+                 </form>
+            </div>
+            <div class="col-lg-6">
+                <h3 class="mt-4"><i class="bi bi-clock-history"></i> Riwayat & Statistik Konsultasi Anda</h3>
+                <div id="mahasiswaStatSection" class="row g-3 mb-4">
+                    <div class="col-sm-4 col-12"><div class="stat-card"><i class="bi bi-journal-arrow-up stat-icon"></i><div id="mahasiswaTotalCount" class="stat-value">0</div><div class="stat-label">Total Diajukan</div></div></div>
+                    <div class="col-sm-4 col-6"><div class="stat-card"><i class="bi bi-check-circle-fill stat-icon" style="color: var(--success-color);"></i><div id="mahasiswaDijawabCount" class="stat-value">0</div><div class="stat-label">Sudah Dijawab</div></div></div>
+                    <div class="col-sm-4 col-6"><div class="stat-card"><i class="bi bi-x-circle-fill stat-icon" style="color: var(--danger-color);"></i><div id="mahasiswaDitutupCount" class="stat-value">0</div><div class="stat-label">Ditutup</div></div></div>
+                </div>
+            </div>
+        </div>
+        <hr class="my-5">
+        <h3><i class="bi bi-list-task"></i> Riwayat Konsultasi</h3>
+        <div id="riwayatKonsultasiMahasiswa"></div>
+      </div>
+
+      <!-- DASHBOARD DOSEN -->
+      <div id="dosenView" class="content-card">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-person-video3"></i> Dashboard Dosen Konsultan</h2>
+            <div class="d-flex align-items-center">
+                <span id="userInfoDosen"></span>
+                <button class="btn btn-outline-danger btn-sm ms-3 logout-button"><i class="bi bi-box-arrow-right m-0"></i></button>
+            </div>
+        </div>
+        <hr>
+        <p class="text-muted">Ringkasan aktivitas dan daftar konsultasi yang menunggu balasan Anda.</p>
+        <div class="row g-4 my-4">
+            <div class="col-md-3 col-6"><div class="stat-card"><i class="bi bi-hourglass-split stat-icon" style="color: var(--warning-color);"></i><div id="dosenPendingCount" class="stat-value">...</div><div class="stat-label">Menunggu Balasan</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><i class="bi bi-journal-check stat-icon"></i><div id="dosenTotalCount" class="stat-value">...</div><div class="stat-label">Total Dibalas</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><i class="bi bi-check-circle-fill stat-icon" style="color: var(--success-color);"></i><div id="dosenDijawabCount" class="stat-value">...</div><div class="stat-label">Dijawab</div></div></div>
+            <div class="col-md-3 col-6"><div class="stat-card"><i class="bi bi-x-circle-fill stat-icon" style="color: var(--danger-color);"></i><div id="dosenDitutupCount" class="stat-value">...</div><div class="stat-label">Ditutup</div></div></div>
+        </div>
+        <hr>
+        <div id="konsultasiUntukDosen" class="mt-4"></div>
+      </div>
+
+      <!-- DASHBOARD ADMIN -->
+      <div id="adminView" class="content-card">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-person-gear"></i> Dashboard Admin</h2>
+            <div class="d-flex align-items-center">
+                <span id="userInfoAdmin"></span>
+                <button class="btn btn-outline-danger btn-sm ms-3 logout-button"><i class="bi bi-box-arrow-right m-0"></i></button>
+            </div>
+        </div>
+        <hr>
+        <p class="text-muted">Ringkasan aktivitas sistem dan manajemen data master.</p>
+        <!-- Admin Stats & Tools Section -->
+        <div class="card admin-sub-card mb-5"><div class="card-body p-4"><div class="row g-4">
+            <div class="col-lg-8">
+                <h3 class="mt-2"><i class="bi bi-bar-chart-line-fill"></i> Statistik Keseluruhan</h3>
+                <div class="row g-3">
+                    <div class="col-sm-6"><div class="stat-card clickable h-100" onclick="showArsipKonsultasi()"><i class="bi bi-archive-fill stat-icon"></i><div id="arsipCount" class="stat-value">...</div><div class="stat-label">Total Arsip Konsultasi</div></div></div>
+                    <div class="col-sm-6"><div class="stat-card h-100"><i class="bi bi-people-fill stat-icon"></i><div id="totalUserCount" class="stat-value">...</div><div class="stat-label">Total User Terdaftar</div></div></div>
+                </div>
+                <h4 class="mt-4 h5 text-center text-muted">Rekapan Aktivitas</h4>
+                <div class="row g-3">
+                    <div class="col-lg-4"><div class="table-responsive"><table class="table table-sm table-hover"><thead><tr><th>Topik</th><th>Jumlah</th></tr></thead><tbody id="rekapTopik"></tbody></table></div></div>
+                    <div class="col-lg-4"><div class="table-responsive"><table class="table table-sm table-hover"><thead><tr><th>Mahasiswa</th><th>Jumlah</th></tr></thead><tbody id="rekapMahasiswa"></tbody></table></div></div>
+                    <div class="col-lg-4"><div class="table-responsive"><table class="table table-sm table-hover"><thead><tr><th>Dosen</th><th><i class="bi bi-check-lg text-success"></i></th><th><i class="bi bi-x-lg text-danger"></i></th></tr></thead><tbody id="rekapDosen"></tbody></table></div></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h3 class="mt-2"><i class="bi bi-tools"></i> Alat Admin</h3>
+                <div class="list-group">
+                    <button type="button" class="list-group-item list-group-item-action" onclick="openUserModal(null, 'MAHASISWA')"><i class="bi bi-person-plus-fill me-2"></i> Tambah Mahasiswa</button>
+                    <button type="button" class="list-group-item list-group-item-action" onclick="openUserModal(null, 'DOSEN')"><i class="bi bi-person-video3 me-2"></i> Tambah Dosen</button>
+                </div>
+                <h3 class="mt-4"><i class="bi bi-box-seam"></i> Backup Data</h3>
+                <div class="list-group">
+                     <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="handleBackup(this)"><span><i class="bi bi-database-down me-2"></i> Backup Seluruh Data (JSON)</span><span class="spinner-border spinner-border-sm d-none"></span></button>
+                </div>
+                <div class="card bg-light border-warning mt-4"><div class="card-body">
+                    <h5 class="card-title text-warning-emphasis"><i class="bi bi-exclamation-triangle-fill"></i> Restore Data</h5>
+                    <p class="card-text small">Tindakan ini akan menimpa seluruh data. Gunakan dengan hati-hati.</p>
+                    <form id="restoreForm">
+                        <div class="input-group">
+                            <input type="file" class="form-control form-control-sm" id="restoreFile" accept=".json" required>
+                            <button class="btn btn-sm btn-warning" type="submit"><i class="bi bi-database-up"></i></button>
+                        </div>
+                    </form>
+                </div></div>
+            </div>
+        </div></div></div>
+        <div class="row g-4">
+            <div class="col-lg-8"><div class="card admin-sub-card h-100"><div class="card-body p-4">
+                <h3 class="mb-4"><i class="bi bi-people-fill"></i> Manajemen User</h3>
+                <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Topik</th><th>Aksi</th></tr></thead><tbody id="userList"></tbody></table></div>
+            </div></div></div>
+            <div class="col-lg-4"><div class="card admin-sub-card h-100"><div class="card-body p-4">
+                <h3 class="mb-4"><i class="bi bi-tags-fill"></i> Manajemen Topik Konsultasi</h3>
+                <form id="topikForm" class="mb-3"><div class="input-group">
+                    <input type="text" id="topikId" class="form-control" placeholder="ID Topik (e.g. T01)" required>
+                    <input type="text" id="topikNama" class="form-control" placeholder="Nama Topik" required>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg m-0"></i></button>
+                </div></form>
+                <div class="table-responsive"><table class="table table-sm"><thead><tr><th>ID</th><th>Nama</th><th></th></tr></thead><tbody id="topikList"></tbody></table></div>
+            </div></div></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer"><div class="container-fluid text-center"><p class="mb-0">&copy; <span id="currentYear"></span> Sistem Informasi Konsultasi. All Rights Reserved.</p></div></footer>
+    
+    <!-- MODALS -->
+    <div class="modal fade" id="arsipModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content" style="border-radius: 1rem;"><div class="modal-header bg-light"><h5 class="modal-title h2"><i class="bi bi-archive-fill me-2"></i> Arsip Konsultasi</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="arsipContent" style="background-color: var(--light-bg); padding: 1.5rem;"></div></div></div></div>
+    <div class="modal fade" id="userModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content" style="border-radius: 1rem;"><form id="userForm"><div class="modal-header bg-light"><h5 class="modal-title h2" id="userModalLabel"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="userId" name="userId"><input type="hidden" id="userRole" name="userRole"><div class="mb-3"><label for="userNama" class="form-label">Nama Lengkap</label><input type="text" class="form-control" id="userNama" name="nama" required></div><div class="mb-3"><label for="userEmail" class="form-label">Email</label><input type="email" class="form-control" id="userEmail" name="email" required></div><div class="mb-3"><label for="userPassword" class="form-label">Password</label><input type="password" class="form-control" id="userPassword" name="password"><small class="form-text text-muted">Isi untuk menambah/mengubah. Kosongkan jika tidak ingin mengubah.</small></div><div class="mb-3"><label class="form-label">Topik Konsultasi</label><div id="userTopikCheckboxes" class="p-2 border rounded" style="max-height: 150px; overflow-y: auto;"></div><small class="form-text text-muted">Pilih satu atau lebih topik yang relevan.</small></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan</button></div></form></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // PASTIKAN ANDA MENGGUNAKAN URL DEPLOYMENT BARU SETELAH MEMPERBARUI KODE
+      const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTxyIc-_UQ5aVTj5loZ9VSiNMx1h-VCELlcAumq9xa4gKDn8QcZI1TvPiwDeHcppFz/exec';
+      
+      let userModalInstance, arsipModalInstance;
+      let allTopikList = []; 
+      
+      // Mengganti google.script.run dengan fetch API untuk fleksibilitas
+      async function callApi(action, payload, method = 'POST') {
+        const spinner = document.getElementById("loginSpinner");
+        if(spinner) spinner.style.display = 'block';
+        try {
+          const options = { method, redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' } };
+          let url = SCRIPT_URL;
+          if (method === 'POST') {
+              options.body = JSON.stringify({ action, payload });
+          } else { // GET
+              const params = new URLSearchParams(payload);
+              params.append('action', action);
+              url = `${SCRIPT_URL}?${params.toString()}`;
+          }
+          const response = await fetch(url, options);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return await response.json();
+        } catch (error) {
+          console.error("API call failed:", {action, payload, error});
+          alert("Terjadi kesalahan koneksi ke server. Silakan cek konsol dan coba lagi.");
+          throw error;
+        } finally {
+            if(spinner) spinner.style.display = 'none';
+        }
+      }
+      
+      document.addEventListener("DOMContentLoaded", function() {
+        const mainContainer = document.getElementById("mainContainer");
+        const bodyEl = document.body;
+        const views = { loginView: document.getElementById("loginView"), mahasiswaView: document.getElementById("mahasiswaView"), dosenView: document.getElementById("dosenView"), adminView: document.getElementById("adminView") };
+        
+        function showView(viewName) {
+            Object.values(views).forEach(v => { if (v) v.style.display = 'none'; });
+            if(views[viewName]) {
+                views[viewName].style.display = 'block';
+                const isLogin = viewName === 'loginView';
+                mainContainer.className = isLogin ? 'container-login' : 'container-fluid py-4';
+                bodyEl.style.alignItems = isLogin ? 'center' : 'flex-start';
+            }
+        }
+        
+        userModalInstance = new bootstrap.Modal(document.getElementById('userModal'));
+        arsipModalInstance = new bootstrap.Modal(document.getElementById('arsipModal'));
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+        if (loggedInUser) {
+          showDashboard(loggedInUser);
+        } else {
+          showView("loginView"); // Memastikan login view ditampilkan
+          setupLoginValidation();
+        }
+
+        document.getElementById("btnMasuk").addEventListener("click", handleMasuk);
+        document.querySelectorAll(".logout-button").forEach(btn => btn.addEventListener("click", handleLogout));
+        document.getElementById("formKonsultasi")?.addEventListener("submit", handleSubmitKonsultasi);
+        document.getElementById("userForm")?.addEventListener("submit", handleUserFormSubmit);
+        document.getElementById("topikForm")?.addEventListener("submit", handleTopikFormSubmit);
+        document.getElementById("restoreForm")?.addEventListener("submit", handleRestoreSubmit);
+        
+        function setupLoginValidation() {
+          const emailInput = document.getElementById("emailInput");
+          const passwordInput = document.getElementById("passwordInput");
+          const btnMasuk = document.getElementById("btnMasuk");
+          const validate = () => { btnMasuk.disabled = !(emailInput.value.trim() && passwordInput.value.trim()); };
+          emailInput.addEventListener("input", validate);
+          passwordInput.addEventListener("input", validate);
+          validate(); // Panggil sekali saat inisialisasi
+        }
+
+        async function handleMasuk() {
+            const email = document.getElementById("emailInput").value;
+            const password = document.getElementById("passwordInput").value;
+            if (!email || !password) return;
+            document.getElementById("btnMasuk").disabled = true;
+            try {
+              const response = await callApi('loginUser', { loginData: { email, password } });
+              if(response.success){
+                  sessionStorage.setItem("loggedInUser", JSON.stringify(response.user));
+                  showDashboard(response.user);
+              } else {
+                  alert(response.message || "Login gagal.");
+              }
+            } catch(e) {
+              // error sudah di handle di callApi
+            } finally {
+              document.getElementById("btnMasuk").disabled = false;
+            }
+        }
+
+        function handleLogout() {
+          sessionStorage.removeItem("loggedInUser");
+          location.reload();
+        }
+        
+        async function showDashboard(user) {
+          const roleBadge = `<span class="badge rounded-pill role-badge">${user.role}</span>`;
+          const userInfoHtml = `Halo, <strong>${user.nama}</strong> ${roleBadge}`;
+          if (user.role === "MAHASISWA") {
+            showView("mahasiswaView");
+            document.getElementById('userInfoMahasiswa').innerHTML = userInfoHtml;
+            document.getElementById('namaMahasiswa').value = user.nama;
+            await loadTopikForMahasiswa(user.topik);
+            await loadRiwayatKonsultasiMahasiswa(user.userId);
+          } else if (user.role === "DOSEN") {
+            showView("dosenView");
+            document.getElementById('userInfoDosen').innerHTML = userInfoHtml;
+            await loadDosenDashboard(user);
+          } else if (user.role === "ADMIN") {
+            showView("adminView");
+            document.getElementById('userInfoAdmin').innerHTML = userInfoHtml;
+            await loadAdminDashboard();
+          }
+        }
+        
+        async function loadTopikListFromServer() {
+           if (allTopikList.length === 0) {
+             allTopikList = await callApi('getTopikList', {}, 'GET') || [];
+           }
+        }
+        
+        async function loadTopikForMahasiswa(userTopikStr) {
+            await loadTopikListFromServer();
+            const userTopikIds = userTopikStr ? userTopikStr.split(',') : [];
+            const select = document.getElementById('topikMahasiswa');
+            select.innerHTML = '<option value="" selected disabled>Pilih topik...</option>';
+            
+            const filteredTopik = allTopikList.filter(p => userTopikIds.includes(p.id.toString()));
+            
+            if (filteredTopik.length > 0) {
+                filteredTopik.forEach(p => select.innerHTML += `<option value="${p.id}">${p.nama}</option>`);
+                select.disabled = false;
+            } else {
+                select.innerHTML = '<option value="" disabled selected>Anda tidak terdaftar pada topik manapun.</option>';
+                select.disabled = true;
+            }
+            document.querySelector('#formKonsultasi button[type="submit"]').disabled = select.disabled;
+        }
+        
+        async function handleSubmitKonsultasi(e) {
+          e.preventDefault();
+          const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
+          const konsultasiData = {
+              pertanyaan: document.getElementById("pertanyaanText").value,
+              id_topik: document.getElementById("topikMahasiswa").value,
+              id_mahasiswa_pengaju: user.userId
+          };
+          if (!konsultasiData.id_topik) return alert("Topik wajib dipilih.");
+          const submitBtn = e.target.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Mengirim...`;
+          try {
+            const response = await callApi('submitKonsultasi', { konsultasiData });
+            alert(response.message);
+            if (response.success) {
+              e.target.reset();
+              document.getElementById('namaMahasiswa').value = user.nama;
+              loadRiwayatKonsultasiMahasiswa(user.userId);
+            }
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-send-check"></i> Kirim Konsultasi`;
+          }
+        }
+        
+        async function loadRiwayatKonsultasiMahasiswa(mahasiswaId) {
+            const container = document.getElementById("riwayatKonsultasiMahasiswa");
+            container.innerHTML = '<div class="text-center"><div class="spinner-border text-secondary"></div></div>';
+            const list = await callApi('getKonsultasiByMahasiswa', { mahasiswaId }, 'GET');
+            document.getElementById("mahasiswaTotalCount").textContent = list.length;
+            document.getElementById("mahasiswaDijawabCount").textContent = list.filter(s => s.status === 'SUDAH_DIJAWAB').length;
+            document.getElementById("mahasiswaDitutupCount").textContent = list.filter(s => s.status === 'DITUTUP').length;
+
+            if (!list || list.length === 0) {
+              container.innerHTML = '<div class="alert alert-light text-center border">Anda belum pernah mengajukan konsultasi.</div>';
+              return;
+            }
+            let html = '<div class="table-responsive"><table class="table table-striped table-hover"><thead><tr><th>Pertanyaan</th><th>Status</th><th>Balasan Dosen</th></tr></thead><tbody>';
+            list.slice().reverse().forEach(k => {
+              let statusBadge = '';
+              if (k.status === 'SUDAH_DIJAWAB') statusBadge = '<span class="badge bg-success">SUDAH DIJAWAB</span>';
+              else if (k.status === 'DITUTUP') statusBadge = '<span class="badge bg-danger">DITUTUP</span>';
+              else if (k.status === 'MENUNGGU_BALASAN') statusBadge = '<span class="badge bg-warning text-dark">MENUNGGU BALASAN</span>';
+              else statusBadge = `<span class="badge bg-secondary">${k.status}</span>`;
+              html += `<tr><td>${k.pertanyaan.substring(0, 70)}...</td><td>${statusBadge}</td><td>${k.balasan_dosen || '-'}</td></tr>`;
+            });
+            container.innerHTML = html + '</tbody></table></div>';
+        }
+
+        async function loadDosenDashboard(user) {
+            const stats = await callApi('getDosenStats', { dosenId: user.userId }, 'GET');
+            if (stats) {
+                document.getElementById("dosenPendingCount").textContent = stats.pending;
+                document.getElementById("dosenTotalCount").textContent = stats.totalDibalas;
+                document.getElementById("dosenDijawabCount").textContent = stats.totalDijawab;
+                document.getElementById("dosenDitutupCount").textContent = stats.totalDitutup;
+            }
+            await loadKonsultasiForDosen(user.topik || '');
+        }
+
+        async function loadKonsultasiForDosen(topikIdsStr) {
+          const list = await callApi('getKonsultasiForDosen', { topikIds: topikIdsStr }, 'GET');
+          const container = document.getElementById("konsultasiUntukDosen");
+          if (!list || list.length === 0) {
+            container.innerHTML = '<div class="alert alert-info text-center"><i class="bi bi-emoji-sunglasses"></i> Tidak ada konsultasi yang perlu dibalas.</div>';
+            return;
+          }
+          container.innerHTML = list.map(k => `
+            <div class="card konsultasi-card mb-4" id="card_${k.id_konsultasi}">
+              <div class="card-header d-flex justify-content-between">
+                <span>Dari: <strong>${k.nama_mahasiswa_pengaju}</strong></span>
+                <span class="badge bg-primary align-self-center">${k.nama_topik}</span>
+              </div>
+              <div class="card-body">
+                <p class="card-text bg-light p-3 rounded" style="white-space: pre-wrap;">${k.pertanyaan}</p><hr>
+                <div class="mb-3"><textarea class="form-control" id="balasan_${k.id_konsultasi}" rows="3" placeholder="Tulis balasan Anda di sini..."></textarea></div>
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="btn btn-danger" onclick="handleBalasan('${k.id_konsultasi}', 'DITUTUP', this)"><i class="bi bi-x-circle"></i> Tutup Konsultasi</button>
+                  <button class="btn btn-success" onclick="handleBalasan('${k.id_konsultasi}', 'SUDAH_DIJAWAB', this)"><i class="bi bi-send"></i> Kirim Balasan</button>
+                </div>
+              </div>
+            </div>`).join('');
+        }
+
+        window.handleBalasan = async function(id_konsultasi, status, button) {
+            const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
+            const balasan = document.getElementById(`balasan_${id_konsultasi}`).value;
+            if (status === 'SUDAH_DIJAWAB' && !balasan.trim()) return alert("Balasan wajib diisi.");
+            const buttonContainer = button.parentElement;
+            buttonContainer.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+            button.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+            const balasanData = { id_konsultasi, status, balasan: balasan || "Konsultasi ditutup oleh dosen.", id_dosen_penjawab: user.userId };
+            try {
+              const response = await callApi('prosesBalasan', { balasanData });
+              alert(response.message);
+              if (response.success) {
+                const card = document.getElementById(`card_${id_konsultasi}`);
+                card.style.transition = 'opacity 0.5s'; card.style.opacity = '0';
+                setTimeout(() => {
+                  card.remove();
+                  if (document.getElementById("konsultasiUntukDosen").children.length === 0) { loadKonsultasiForDosen(user.topik); }
+                  loadDosenDashboard(user);
+                }, 500);
+              }
+            } finally {
+               buttonContainer.querySelectorAll('.btn').forEach(btn => btn.disabled = false);
+               buttonContainer.querySelector('.btn-success').innerHTML = '<i class="bi bi-send"></i> Kirim Balasan';
+               buttonContainer.querySelector('.btn-danger').innerHTML = '<i class="bi bi-x-circle"></i> Tutup Konsultasi';
+            }
+        }
+        
+        async function loadAdminDashboard() {
+            const data = await callApi('getAdminDashboardData', {}, 'GET');
+            if (data) {
+                allTopikList = data.topik || [];
+                populateAdminStats(data.stats, data.users);
+                populateUserTables(data.users);
+                populateAdminTopikList(data.topik);
+            }
+        }
+
+        function populateAdminStats(stats, users) {
+          if (!stats) return;
+          document.getElementById('arsipCount').textContent = stats.arsipCount || 0;
+          document.getElementById('totalUserCount').textContent = (users || []).length;
+          
+          const renderTable = (tbodyId, data, limit = 5) => {
+            const tbody = document.getElementById(tbodyId);
+            const entries = Object.entries(data).sort(([,a],[,b]) => b - a);
+            tbody.innerHTML = entries.length > 0 ? entries.slice(0, limit).map(([key, val]) => `<tr><td>${key.split(" ")[0]}</td><td>${val}</td></tr>`).join('') : `<tr><td colspan="2" class="text-center text-muted">-</td></tr>`;
+          };
+          
+          renderTable('rekapMahasiswa', stats.konsultasiPerMahasiswa || {});
+          renderTable('rekapTopik', stats.konsultasiPerTopik || {});
+          
+          const rekapDosenBody = document.getElementById('rekapDosen');
+          const dosenEntries = Object.values(stats.balasanPerDosen || {}).sort((a,b) => (b.dijawab + b.ditutup) - (a.dijawab + a.ditutup));
+          rekapDosenBody.innerHTML = dosenEntries.length > 0 ? dosenEntries.map(d => `<tr><td>${d.nama.split(" ")[0]}</td><td>${d.dijawab}</td><td>${d.ditutup}</td></tr>`).join('') : '<tr><td colspan="3" class="text-center text-muted">-</td></tr>';
+        }
+
+        function populateUserTables(users) {
+            if (!users) return;
+            const userListBody = document.getElementById('userList');
+            userListBody.innerHTML = users.map(user => {
+                const topikBadges = (user.topik || '').split(',').filter(Boolean).map(p => `<span class="badge bg-secondary me-1">${p}</span>`).join('') || '-';
+                return `<tr><td>${user.nama}</td><td>${user.email || '-'}</td><td><span class="badge bg-info text-dark">${user.role}</span></td><td>${topikBadges}</td>
+                  <td><button class="btn btn-sm btn-outline-primary py-1 px-2" onclick='openUserModal(${JSON.stringify(user)}, "${user.role}")'><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn btn-sm btn-outline-danger py-1 px-2" onclick="handleDeleteUser('${user.userId}', '${user.nama}')"><i class="bi bi-trash"></i></button>
+                  </td></tr>`;
+            }).join('');
+        }
+        
+        function populateAdminTopikList(list) {
+            const container = document.getElementById('topikList');
+            if (!list) return;
+            container.innerHTML = list.map(p => `<tr><td><span class="badge bg-primary">${p.id}</span></td><td>${p.nama}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger p-0 px-2" onclick="handleDeleteTopik('${p.id}', '${p.nama}')"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
+        }
+        
+        async function handleTopikFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('topikId').value.trim();
+            const nama = document.getElementById('topikNama').value.trim();
+            if(!id || !nama) return;
+            const response = await callApi('addTopik', { topikData: { id, nama } });
+            alert(response.message);
+            if (response.success) { e.target.reset(); loadAdminDashboard(); }
+        }
+
+        window.handleDeleteTopik = async function(id, nama) {
+            if (confirm(`Yakin ingin menghapus topik "${nama}" (${id})?`)) {
+                const response = await callApi('deleteTopik', { topikId: id });
+                alert(response.message);
+                if (response.success) loadAdminDashboard();
+            }
+        }
+
+        window.openUserModal = async function(user, role) {
+          const form = document.getElementById('userForm');
+          form.reset();
+          await loadTopikListFromServer();
+          document.getElementById('userRole').value = role;
+          const label = document.getElementById('userModalLabel');
+          label.innerHTML = `<i class="bi ${role === 'MAHASISWA' ? 'bi-person-plus-fill' : 'bi-person-video3'} me-2"></i> ${user ? 'Edit' : 'Tambah'} ${role.charAt(0) + role.slice(1).toLowerCase()}`;
+          
+          const checkboxContainer = document.getElementById('userTopikCheckboxes');
+          checkboxContainer.innerHTML = '';
+          const userTopik = user ? (user.topik || '').split(',') : [];
+          allTopikList.forEach(p => {
+              checkboxContainer.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" value="${p.id}" id="topik_check_${p.id}" ${userTopik.includes(p.id.toString()) ? 'checked' : ''}><label class="form-check-label" for="topik_check_${p.id}">${p.nama} (${p.id})</label></div>`;
+          });
+
+          if (user) {
+            document.getElementById('userId').value = user.userId;
+            document.getElementById('userNama').value = user.nama;
+            document.getElementById('userEmail').value = user.email || '';
+            document.getElementById('userPassword').required = false;
+            document.getElementById('userPassword').placeholder = "Kosongkan jika tidak diubah";
+          } else {
+            document.getElementById('userId').value = '';
+            document.getElementById('userPassword').required = true;
+            document.getElementById('userPassword').placeholder = "";
+          }
+          userModalInstance.show();
+        }
+
+        async function handleUserFormSubmit(e) {
+            e.preventDefault();
+            const selectedTopik = Array.from(document.querySelectorAll('#userTopikCheckboxes .form-check-input:checked')).map(cb => cb.value).join(',');
+            const userData = {
+                userId: e.target.userId.value, nama: e.target.userNama.value, email: e.target.userEmail.value,
+                role: e.target.userRole.value, password: e.target.userPassword.value, topik: selectedTopik,
+            };
+            const action = userData.userId ? 'updateUser' : 'addUser';
+            if(action === 'addUser' && !userData.password) return alert("Password wajib diisi untuk user baru.");
+            const response = await callApi(action, { userData });
+            alert(response.message);
+            if(response.success) { userModalInstance.hide(); loadAdminDashboard(); }
+        }
+        
+        window.handleDeleteUser = async function(userId, userName) {
+            if (confirm(`Yakin ingin menghapus user "${userName}"?`)) {
+                const response = await callApi('deleteUser', { userId });
+                alert(response.message);
+                if (response.success) loadAdminDashboard();
+            }
+        }
+        
+        window.handleBackup = async function(button) {
+            const spinner = button.querySelector('.spinner-border');
+            spinner.classList.remove('d-none'); button.disabled = true;
+            try {
+                const response = await callApi('backupData', {});
+                if(response.success){
+                    const filename = `konsultasi_backup_${new Date().toISOString().slice(0, 10)}.json`;
+                    const blob = new Blob([response.backupData], { type: 'application/json' });
+                    const a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(blob);
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(a.href);
+                } else { alert(response.message || 'Backup gagal'); }
+            } finally { spinner.classList.add('d-none'); button.disabled = false; }
+        }
+        
+        async function handleRestoreSubmit(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('restoreFile');
+            const file = fileInput.files[0];
+            if(!file) return alert("Pilih file backup (.json).");
+            if (prompt("PERINGATAN! Ini akan MENGGANTI SEMUA data yang ada. Ketik 'RESTORE' untuk melanjutkan.") !== 'RESTORE') {
+              fileInput.value = ''; // reset file input
+              return alert("Proses restore dibatalkan.");
+            }
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const backupData = JSON.parse(event.target.result);
+                    const response = await callApi('restoreData', { backupData });
+                    alert(response.message);
+                    if(response.success) location.reload();
+                } catch (err) { alert("Gagal memproses file backup: " + err.message); }
+            };
+            reader.readAsText(file);
+        }
+
+        window.showArsipKonsultasi = async function() {
+            const modalBody = document.getElementById('arsipContent');
+            modalBody.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div></div>';
+            arsipModalInstance.show();
+            const list = await callApi('getArsipKonsultasi', {}, 'GET');
+            if (!list || list.length === 0) {
+              modalBody.innerHTML = '<div class="alert alert-info text-center m-3">Arsip konsultasi masih kosong.</div>';
+              return;
+            }
+            modalBody.innerHTML = list.slice().reverse().map(k => `
+              <div class="card konsultasi-card mb-3">
+                <div class="card-header d-flex justify-content-between"><span>Konsultasi dari: <strong>${k.nama_mahasiswa_pengaju}</strong></span><span class="badge bg-${k.status === 'SUDAH_DIJAWAB' ? 'success' : 'danger'}">${k.status}</span></div>
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-muted">Pertanyaan:</h6>
+                  <p class="card-text bg-light p-2 rounded">${k.pertanyaan}</p>
+                  <h6 class="card-subtitle mt-3 mb-2 text-muted">Balasan:</h6>
+                  <p class="card-text bg-light p-2 rounded">${k.balasan_dosen}</p>
+                </div>
+              </div>`).join('');
+        }
+      });
+    </script>
+  </body>
+</html>
